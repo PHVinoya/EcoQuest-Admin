@@ -1,28 +1,21 @@
 <?php
 session_start();
+require 'firestore.php';
 
-// Fixed credentials
-$admin_user = "admin";
-$admin_pass = "admin123";
+header('Content-Type: application/json');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    if ($username === $admin_user && $password === $admin_pass) {
-        // Set session and redirect
-        $_SESSION['admin'] = true;
-        header("Location: dashboard.php");
-        exit();
+    $user = getUserByUsername($username);
+
+    if ($user && $user['password'] === $password) {
+        $_SESSION['username'] = $username;
+        echo json_encode(['success' => true, 'redirect' => 'dashboard.php']);
     } else {
-        // Redirect back with error
-        header("Location: index.html?error=invalid");
-        exit();
+        echo json_encode(['success' => false, 'error' => 'Invalid username or password']);
     }
-} else {
-    // Direct access not allowed
-    header("Location: index.html");
     exit();
 }
 ?>
-Manus

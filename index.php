@@ -80,6 +80,7 @@
                 <p>Access the EcoQuest dashboard</p>
             </div>
             <form id="loginForm" action="login.php" method="POST">
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
                 <div class="input-group">
                     <label for="username">Username</label>
                     <div class="input-wrapper">

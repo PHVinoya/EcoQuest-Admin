@@ -224,7 +224,7 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (v9 modular) -->
+   
     <script type="module" src="admin-script.js"></script>
 </body>
 </html>

@@ -69,21 +69,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle Login Form Submission
+    // Handle login form submission
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
         
-        // Simple Admin Check (Placeholder for real auth)
-        if (username === 'admin' && password === 'admin123') {
-            sessionStorage.setItem('adminLoggedIn', 'true');
-            window.location.href = 'admin.html';
-        } else {
-            alert('Invalid credentials. Try admin / admin123');
-        }
+        const formData = new FormData(loginForm);
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Hide any previous error message
+        errorMessage.style.display = 'none';
+        
+        fetch('login.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                errorMessage.textContent = data.error;
+                errorMessage.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorMessage.textContent = 'An error occurred. Please try again.';
+            errorMessage.style.display = 'block';
+        });
     });
-
     // 5. Smooth Scrolling for Navigation Links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {

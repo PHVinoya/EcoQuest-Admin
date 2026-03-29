@@ -385,6 +385,18 @@ body {
     color: var(--primary-color);
 }
 
+/* Error Message */
+.error-message {
+    background: rgba(255, 11, 85, 0.1);
+    color: var(--accent-pink);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 11, 85, 0.2);
+    text-align: center;
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
