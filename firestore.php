@@ -1,17 +1,14 @@
 <?php
 // firestore.php
 
-// Your Firebase project ID
 $projectId = "ecoquest-ar";
-
-// Your Firestore Web API Key (found in Project Settings -> General -> Web API Key)
 $apiKey = "AIzaSyAwrqK_cyeGrI1C02bgyv1zJ2AgRwVkd1s";
 
-function getUserByUsername($username) {
+// --- Admin login ---
+function getAdminByUsername($username) {
     global $projectId, $apiKey;
 
     $url = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents/admins?key=$apiKey";
-
     $response = @file_get_contents($url);
     if (!$response) return null;
 
@@ -29,4 +26,37 @@ function getUserByUsername($username) {
     }
     return null;
 }
-?>
+
+// --- Fetch all users for Manage Users page ---
+function getAllUsers() {
+    global $projectId, $apiKey;
+
+    $url = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents/users?key=$apiKey";
+    $response = @file_get_contents($url);
+
+    if (!$response) {
+        return ['error' => 'Could not fetch users from Firestore'];
+    }
+
+    $data = json_decode($response, true);
+    if (!isset($data['documents'])) return [];
+
+    $users = [];
+    foreach ($data['documents'] as $doc) {
+        $fields = $doc['fields'];
+
+        // Extract UID from full document path
+        $parts = explode('/', $doc['name']);
+        $uid = end($parts);
+
+        $users[] = [
+            'uid' => $uid,
+            'email' => $fields['email']['stringValue'] ?? '',
+            'points' => isset($fields['points']['integerValue']) ? (int)$fields['points']['integerValue'] : 0,
+            'coins' => isset($fields['coins']['integerValue']) ? (int)$fields['coins']['integerValue'] : 0
+        ];
+    }
+
+    return $users;
+}
+?>  

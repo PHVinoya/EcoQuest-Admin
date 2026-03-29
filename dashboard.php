@@ -109,6 +109,9 @@
                         <i class="fas fa-search"></i>
                         <input type="text" id="userSearch" placeholder="Search users by email or UID...">
                     </div>
+                    <button class="btn secondary-btn refresh-btn" id="refreshUsersBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
                 </div>
                 <div class="table-container glass-morphism">
                     <table id="usersTable">
@@ -116,7 +119,8 @@
                             <tr>
                                 <th>Email</th>
                                 <th>UID</th>
-                                <th>Status</th>
+                                <th>Coins</th>
+                                <th>Points</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -139,7 +143,12 @@
                         <i class="fas fa-search"></i>
                         <input type="text" id="voucherSearch" placeholder="Search vouchers...">
                     </div>
-                    <button class="btn primary-btn" id="validateVoucherBtn">Validate Voucher</button>
+                    <div class="control-buttons">
+                        <button class="btn secondary-btn refresh-btn" id="refreshVouchersBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn primary-btn" id="validateVoucherBtn">Validate Voucher</button>
+                    </div>
                 </div>
                 <div class="table-container glass-morphism">
                     <table id="vouchersTable">
@@ -224,7 +233,44 @@
         </div>
     </div>
 
-   
+    <!-- Edit User Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content glass-morphism edit-modal-content">
+            <span class="close-btn" id="closeEditModal">&times;</span>
+            <div class="modal-inner">
+                <h3>Edit User</h3>
+
+                <input type="hidden" id="editUserId">
+
+                <div class="input-group">
+                    <label>Coins</label>
+                    <input type="number" id="editCoins">
+                </div>
+
+                <div class="input-group">
+                    <label>Points</label>
+                    <input type="number" id="editPoints">
+                </div>
+
+                <button class="btn primary-btn" id="saveUserBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    <!-- Delete User Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content glass-morphism delete-modal-content">
+            <div class="modal-inner">
+                <h3>Delete User?</h3>
+                <p>This action cannot be undone.</p>
+
+                <input type="hidden" id="deleteUserId">
+
+            <div class="actions">
+                <button class="btn danger-btn" id="confirmDelete">Delete</button>
+                <button class="btn" id="cancelDelete">Cancel</button>
+            </div>
+        </div>
+    </div>
     <script type="module" src="admin-script.js"></script>
 </body>
 </html>

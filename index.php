@@ -77,7 +77,6 @@
             <span class="close-btn">&times;</span>
             <div class="modal-header">
                 <h2>Admin Login</h2>
-                <p>Access the EcoQuest dashboard</p>
             </div>
             <form id="loginForm" action="login.php" method="POST">
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
@@ -97,9 +96,7 @@
                 </div>
                 <button type="submit" class="btn primary-btn login-submit">Login</button>
             </form>
-            <div class="modal-footer">
-                <a href="#">Forgot password?</a>
-            </div>
+
         </div>
     </div>
 

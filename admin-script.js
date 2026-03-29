@@ -5,13 +5,102 @@ import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, query,
 // --- YOUR FIREBASE CONFIGURATION ---
 // Replace this with your actual Firebase project config
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "your-sender-id",
-    appId: "your-app-id"
+    apiKey: "AIzaSyAwrqK_cyeGrI1C02bgyv1zJ2AgRwVkd1s",
+    authDomain: "ecoquest-ar.firebaseapp.com",
+    projectId: "ecoquest-ar",
+    storageBucket: "ecoquest-ar.firebasestorage.app",
+    messagingSenderId: "150203193691",
+    appId: "1:150203193691:web:0d3b1fc1033505a272a27e"
 };
+
+
+//edit modal
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('edit-btn')) {
+        const uid = e.target.dataset.id;
+
+        document.getElementById('editUserId').value = uid;
+
+        // Optional: prefill values from row
+        const row = e.target.closest('tr');
+        document.getElementById('editCoins').value = row.children[2].innerText;
+        document.getElementById('editPoints').value = row.children[3].innerText;
+
+        document.getElementById('editModal').classList.add('show');
+    }
+});
+
+
+
+
+// Fetch and populate Manage Users table
+async function loadUsers() {
+
+    
+
+    const tbody = document.querySelector("#usersTable tbody");
+    tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+
+    try {
+        const res = await fetch('api/get_users.php', {
+            method: 'GET',
+            credentials: 'include' // send session cookie
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            tbody.innerHTML = `<tr><td colspan="4">${data.error}</td></tr>`;
+            return;
+        }
+
+        const users = data.users;
+        if (users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4">No users found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        users.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${user.email}</td>
+                <td>${user.uid}</td>
+                <td><span class="badge coins">${user.coins}</span></td>
+                <td><span class="badge points">${user.points}</span></td>
+                <td>
+                    <button class="btn edit-btn" data-id="${user.uid}">Edit</button>
+                    <button class="btn delete-btn" data-id="${user.uid}">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="4">Failed to load users</td></tr>';
+    }
+    
+    let usersData = []; // store users globally
+
+    function sortUsers(type) {
+        usersData.sort((a, b) => b[type] - a[type]);
+        renderUsers(usersData);
+    }
+}
+
+
+
+// Call it when "Manage Users" page is clicked
+document.querySelector('[data-page="users"]').addEventListener('click', loadUsers);
+
+//pagination
+const searchInput = document.querySelector('#userSearch');
+searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
+    document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+        const username = row.children[0].textContent.toLowerCase();
+        row.style.display = username.includes(query) ? '' : 'none';
+    });
+});
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -179,16 +268,16 @@ document.addEventListener('DOMContentLoaded', () => {
     initCharts();
 
     // --- 5. Voucher Validation Modal ---
-    const modal = document.getElementById('voucherModal');
+    const voucherModal = document.getElementById('voucherModal');
     const validateBtn = document.getElementById('validateVoucherBtn');
-    const closeBtn = document.querySelector('.close-btn');
+    const voucherCloseBtn = document.querySelector('#voucherModal .close-btn');
     const checkBtn = document.getElementById('checkVoucherBtn');
     const voucherInput = document.getElementById('voucherCodeInput');
     const voucherResult = document.getElementById('voucherResult');
 
-    validateBtn.onclick = () => modal.classList.add('show');
-    closeBtn.onclick = () => {
-        modal.classList.remove('show');
+    validateBtn.onclick = () => voucherModal.classList.add('show');
+    voucherCloseBtn.onclick = () => {
+        voucherModal.classList.remove('show');
         voucherResult.style.display = 'none';
         voucherInput.value = '';
     };
@@ -225,4 +314,141 @@ document.addEventListener('DOMContentLoaded', () => {
             settingsStatus.textContent = 'Profile updated successfully!';
         }, 1500);
     };
+
+    // --- 8. Refresh Buttons ---
+    const refreshUsersBtn = document.getElementById('refreshUsersBtn');
+    const refreshVouchersBtn = document.getElementById('refreshVouchersBtn');
+
+    if (refreshUsersBtn) {
+        refreshUsersBtn.addEventListener('click', () => {
+            refreshUsersBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            refreshUsersBtn.disabled = true;
+            
+            // Reload users data
+            loadUsers().finally(() => {
+                setTimeout(() => {
+                    refreshUsersBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                    refreshUsersBtn.disabled = false;
+                }, 1000);
+            });
+        });
+    }
+
+    if (refreshVouchersBtn) {
+        refreshVouchersBtn.addEventListener('click', () => {
+            refreshVouchersBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            refreshVouchersBtn.disabled = true;
+            
+            // For vouchers, since they use real-time listeners, we'll reload the page
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        });
+    }
+    
+});
+
+document.addEventListener('click', async (e) => {
+    const target = e.target;
+
+    // EDIT BUTTON
+    if (target.classList.contains('edit-btn')) {
+        const row = target.closest('tr');
+        document.getElementById('editUserId').value = target.dataset.id;
+        document.getElementById('editCoins').value = row.children[2].innerText;
+        document.getElementById('editPoints').value = row.children[3].innerText;
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+});
+
+// SAVE CHANGES
+document.getElementById('saveUserBtn').addEventListener('click', async () => {
+    const uid = document.getElementById('editUserId').value;
+    const coins = document.getElementById('editCoins').value;
+    const points = document.getElementById('editPoints').value;
+
+    try {
+        const res = await fetch('api/update_user.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uid, coins, points })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            alert('✅ User updated!');
+            document.getElementById('editModal').style.display = 'none';
+            loadUsers(); // refresh table to show new values
+        } else {
+            alert('❌ ' + (data.error || 'Update failed'));
+        }
+    } catch (err) {
+        console.error(err);
+        alert('❌ Request failed');
+    }
+});
+
+// Close Edit User Modal
+  const editModal = document.getElementById('editModal');
+  const closeEditBtn = document.getElementById('closeEditModal');
+
+  // When the close button is clicked
+  closeEditBtn.addEventListener('click', () => {
+      editModal.style.display = 'none';
+  });
+
+  // Optional: close modal when clicking outside the modal content
+  window.addEventListener('click', (e) => {
+      if (e.target === editModal) {
+          editModal.style.display = 'none';
+      }
+  });
+
+  document.addEventListener('click', (e) => {
+    // DELETE BUTTON
+    if (e.target.classList.contains('delete-btn')) {
+        const uid = e.target.dataset.id; // get UID from button
+        document.getElementById('deleteUserId').value = uid; // put in hidden input
+        document.getElementById('deleteModal').style.display = 'block'; // show modal
+    }
+});
+
+// CANCEL BUTTON
+document.getElementById('cancelDelete').addEventListener('click', () => {
+    document.getElementById('deleteModal').style.display = 'none';
+});
+
+// OPTIONAL: click outside modal content
+window.addEventListener('click', (e) => {
+    const deleteModal = document.getElementById('deleteModal');
+    if (e.target === deleteModal) {
+        deleteModal.style.display = 'none';
+    }
+});
+
+document.getElementById('confirmDelete').addEventListener('click', async () => {
+    const uid = document.getElementById('deleteUserId').value;
+    if (!uid) return alert('No user selected');
+
+    if (!confirm('Are you sure you want to delete this user?')) return;
+
+    try {
+        const res = await fetch('api/delete_user.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uid })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ User deleted');
+            document.getElementById('deleteModal').style.display = 'none';
+            loadUsers(); // reload table
+        } else {
+            alert('❌ Delete failed: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        console.error(err);
+        alert('❌ Request failed');
+    }
 });

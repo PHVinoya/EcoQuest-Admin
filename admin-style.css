@@ -413,17 +413,18 @@ td {
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(8px);
-    align-items: center;
-    justify-content: center;
 }
 
-.modal.show { display: flex; }
+.modal.show { display: block; }
 
 .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     padding: 2.5rem;
     width: 100%;
     max-width: 400px;
-    position: relative;
 }
 
 .voucher-modal-content {
@@ -448,11 +449,142 @@ td {
     font-size: 1.5rem;
 }
 
+.edit-modal-content,
+.delete-modal-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 1.5rem;
+}
+
+.edit-modal-content .close-btn,
+.delete-modal-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-gray);
+    transition: var(--transition);
+}
+
+.edit-modal-content .close-btn:hover,
+.delete-modal-content .close-btn:hover {
+    color: var(--accent-pink);
+}
+
+.delete-modal-content h3 {
+    margin-bottom: 0.75rem;
+}
+
+.delete-modal-content p {
+    margin-bottom: 1.25rem;
+    color: var(--text-gray);
+}
+
+.delete-modal-content .btn {
+    width: 100%;
+    max-width: 240px;
+}
+
+.delete-modal-content .actions {
+    width: 100%;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.delete-modal-content .actions .btn {
+    flex: 1;
+}
+
+.danger-btn {
+    background: var(--accent-pink);
+    color: var(--bg-dark);
+}
+
+.danger-btn:hover {
+    background: rgba(255, 11, 85, 0.8);
+}
+
 .voucher-modal-content h3 {
     margin-bottom: 1.5rem;
     width: 100%;
 }
 
+/* Modal responsiveness */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+        max-width: 500px;
+        padding: 1.75rem;
+    }
+
+    .modal-inner {
+        padding: 0.25rem;
+    }
+
+    .modal-content h3,
+    .modal-content p,
+    .input-group label,
+    .input-group input,
+    .btn {
+        font-size: 0.95rem;
+    }
+
+    .voucher-modal-content .btn,
+    .edit-modal-content .btn,
+    .delete-modal-content .btn {
+        min-width: 130px;
+        width: 100%;
+    }
+
+    .voucher-modal-content .close-btn,
+    .edit-modal-content .close-btn,
+    .delete-modal-content .close-btn {
+        top: 10px;
+        right: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95%;
+        max-width: 340px;
+        padding: 1.25rem;
+    }
+
+    .modal-content h3,
+    .modal-content p,
+    .input-group label,
+    .input-group input,
+    .btn {
+        font-size: 0.9rem;
+    }
+
+    .voucher-modal-content .btn,
+    .edit-modal-content .btn,
+    .delete-modal-content .btn {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .input-group input {
+        padding: 0.8rem;
+    }
+
+    .voucher-modal-content .close-btn,
+    .edit-modal-content .close-btn,
+    .delete-modal-content .close-btn {
+        top: 8px;
+        right: 10px;
+        font-size: 1.25rem;
+    }
+}
 .voucher-modal-content .input-group {
     width: 100%;
 }
@@ -497,6 +629,44 @@ td {
 .primary-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px var(--primary-glow);
+}
+
+.secondary-btn {
+    background: var(--glass-bg);
+    color: var(--text-white);
+    border: 1px solid var(--glass-border);
+}
+
+.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.control-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.refresh-btn i {
+    margin-right: 0.5rem;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.badge.coins {
+    background: rgba(255, 215, 0, 0.2);
+    color: #f1c40f;
+}
+
+.badge.points {
+    background: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
 }
 
 /* Animations */
