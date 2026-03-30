@@ -63,7 +63,7 @@ async function loadUsers() {
         users.forEach(user => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${user.email}</td>
+                <td style="color: #ff0055;">${user.email}</td>
                 <td>${user.uid}</td>
                 <td><span class="badge coins">${user.coins}</span></td>
                 <td><span class="badge points">${user.points}</span></td>
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = docSnap.id;
             const row = `
                 <tr>
-                    <td>${user.email}</td>
+                    <td style="color: #ff0055;">${user.email}</td>
                     <td>${user.uid}</td>
                     <td><span class="status-badge status-${user.status.toLowerCase()}">${user.status}</span></td>
                     <td>
@@ -267,20 +267,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     initCharts();
 
-    // --- 5. Voucher Validation Modal ---
-    const voucherModal = document.getElementById('voucherModal');
-    const validateBtn = document.getElementById('validateVoucherBtn');
-    const voucherCloseBtn = document.querySelector('#voucherModal .close-btn');
-    const checkBtn = document.getElementById('checkVoucherBtn');
-    const voucherInput = document.getElementById('voucherCodeInput');
-    const voucherResult = document.getElementById('voucherResult');
+    // // --- 5. Voucher Validation Modal ---
+    // const voucherModal = document.getElementById('voucherModal');
+    // const validateBtn = document.getElementById('validateVoucherBtn');
+    // const voucherCloseBtn = document.querySelector('#voucherModal .close-btn');
+    // const checkBtn = document.getElementById('checkVoucherBtn');
+    // const voucherInput = document.getElementById('voucherCodeInput');
+    // const voucherResult = document.getElementById('voucherResult');
 
-    validateBtn.onclick = () => voucherModal.classList.add('show');
-    voucherCloseBtn.onclick = () => {
-        voucherModal.classList.remove('show');
-        voucherResult.style.display = 'none';
-        voucherInput.value = '';
-    };
+    // validateBtn.onclick = () => voucherModal.classList.add('show');
+    // voucherCloseBtn.onclick = () => {
+    //     voucherModal.classList.remove('show');
+    //     voucherResult.style.display = 'none';
+    //     voucherInput.value = '';
+    // };
 
     // --- 6. App Update Form ---
     const appForm = document.getElementById('appUpdateForm');
@@ -339,10 +339,13 @@ document.addEventListener('DOMContentLoaded', () => {
             refreshVouchersBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
             refreshVouchersBtn.disabled = true;
             
-            // For vouchers, since they use real-time listeners, we'll reload the page
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+            // Reload vouchers data
+            loadVouchers().finally(() => {
+                setTimeout(() => {
+                    refreshVouchersBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                    refreshVouchersBtn.disabled = false;
+                }, 1000);
+            });
         });
     }
     
@@ -451,4 +454,150 @@ document.getElementById('confirmDelete').addEventListener('click', async () => {
         console.error(err);
         alert('❌ Request failed');
     }
+});
+
+//get status of voucher
+function getStatus(voucher) {
+    const today = new Date();
+    const expiry = new Date(voucher.expiryDate);
+
+    if (voucher.isUsed) return 'Used';
+    if (expiry <= today) return 'Expired';
+    return 'Valid';
+}
+
+// Load vouchers for Manage Vouchers page
+let currentVouchers = []; // store all vouchers globally
+
+function renderVouchers(vouchers) {
+    const tbody = document.querySelector("#vouchersTable tbody");
+    tbody.innerHTML = '';
+
+    if (vouchers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6">No vouchers found</td></tr>';
+        return;
+    }
+
+    vouchers.forEach(v => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="color: #ff0055;">${v.code}</td>
+            <td>${v.email}</td>
+            <td style="color: #00ff62;">${v.reward}</td>
+            <td>${v.expiry}</td>
+            <td><span class="badge ${v.status.toLowerCase()}">${v.status}</span></td>
+            <td>
+                ${v.status === 'Valid' 
+                    ? `<button class="btn use-btn" data-id="${v.id}" data-user="${v.userId}">Mark Used</button>` 
+                    : ''
+                }
+                <button class="btn delete-voucher-btn" data-id="${v.id}" data-user="${v.userId}">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+async function loadVouchers() {
+    const tbody = document.querySelector("#vouchersTable tbody");
+    tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+
+    try {
+        const res = await fetch('api/get_vouchers.php');
+        const data = await res.json();
+
+        if (!data.success) {
+            tbody.innerHTML = '<tr><td colspan="6">Failed to load vouchers</td></tr>';
+            return;
+        }
+
+        currentVouchers = data.vouchers; // store globally
+        renderVouchers(currentVouchers);
+
+    } catch (err) {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="6">Error loading vouchers</td></tr>';
+    }
+}
+
+    // trigger
+    document.querySelector('[data-page="vouchers"]').addEventListener('click', loadVouchers);
+
+    //mark as used
+    document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('use-btn')) {
+
+        const id = e.target.dataset.id;
+        const userId = e.target.dataset.user;
+
+        try {
+            const res = await fetch('api/use_voucher.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, userId })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                alert('✅ Voucher marked as used');
+                loadVouchers(); // refresh
+            } else {
+                alert('❌ Failed to update');
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert('❌ Request failed');
+        }
+    }
+});
+//delete voucher
+// DELETE VOUCHER (with confirmation)
+document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('delete-voucher-btn')) {
+
+        const id = e.target.dataset.id;
+        const userId = e.target.dataset.user;
+
+        // ✅ Confirmation
+        const confirmDelete = confirm('Are you sure you want to delete this voucher?');
+
+        if (!confirmDelete) return;
+
+        try {
+            const res = await fetch('api/delete_voucher.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, userId })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                alert('🗑️ Voucher deleted successfully');
+                loadVouchers();
+            } else {
+                alert('❌ Delete failed');
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert('❌ Request failed');
+        }
+    }
+});
+
+document.querySelector('[data-page="vouchers"]').addEventListener('click', loadVouchers);
+
+
+// Vouchers Search
+const voucherSearchInput = document.getElementById('voucherSearch');
+voucherSearchInput.addEventListener('input', () => {
+    const query = voucherSearchInput.value.toLowerCase();
+
+    // Filter vouchers based on email or code
+    const filtered = currentVouchers.filter(v => v.email.toLowerCase().includes(query) || v.code.toLowerCase().includes(query));
+    
+    renderVouchers(filtered);
 });

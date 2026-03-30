@@ -55,12 +55,7 @@
                 <div class="menu-toggle"><i class="fas fa-bars"></i></div>
                 <h2 id="pageTitle">Dashboard</h2>
             </div>
-            <div class="header-right">
-                <div class="admin-profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=2ecc71&color=fff" alt="Admin Avatar">
-                    <span>Admin User</span>
-                </div>
-            </div>
+            
         </header>
 
         <!-- Dynamic Content Area -->
@@ -107,7 +102,7 @@
                 <div class="table-controls glass-morphism">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="userSearch" placeholder="Search users by email or UID...">
+                        <input type="text" id="userSearch" placeholder="Search users by email">
                     </div>
                     <button class="btn secondary-btn refresh-btn" id="refreshUsersBtn">
                         <i class="fas fa-sync-alt"></i> Refresh
@@ -147,7 +142,7 @@
                         <button class="btn secondary-btn refresh-btn" id="refreshVouchersBtn">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="btn primary-btn" id="validateVoucherBtn">Validate Voucher</button>
+                        
                     </div>
                 </div>
                 <div class="table-container glass-morphism">
@@ -156,11 +151,12 @@
                             <tr>
                                 <th>Voucher Code</th>
                                 <th>User</th>
-                                <th>Status</th>
+                                <th>Reward</th>
                                 <th>Expiry Date</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
-                        </thead>
+                            </thead>
                         <tbody>
                             <!-- Populated by Firebase -->
                         </tbody>
@@ -200,7 +196,7 @@
                     <form id="settingsForm">
                         <div class="input-group">
                             <label>Full Name</label>
-                            <input type="text" id="adminName" value="Admin User" required>
+                            <input type="text" id="adminName" value="Admin" required>
                         </div>
                         <div class="input-group">
                             <label>Email Address</label>
@@ -217,21 +213,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Voucher Validation Modal -->
-    <div id="voucherModal" class="modal">
-        <div class="modal-content glass-morphism voucher-modal-content">
-            <span class="close-btn">&times;</span>
-            <div class="modal-inner">
-                <h3>Validate Voucher</h3>
-                <div class="input-group">
-                    <input type="text" id="voucherCodeInput" placeholder="Enter voucher code">
-                </div>
-                <button class="btn primary-btn" id="checkVoucherBtn">Check Status</button>
-                <div id="voucherResult" class="voucher-result"></div>
-            </div>
-        </div>
-    </div>
 
     <!-- Edit User Modal -->
     <div id="editModal" class="modal">
@@ -271,6 +252,26 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete Voucher Modal -->
+    <div id="deleteVoucherModal" class="modal">
+        <div class="modal-content glass-morphism">
+            <span class="close-btn" id="closeDeleteVoucherModal">&times;</span>
+            <div class="modal-inner">
+                <h3>Delete Voucher</h3>
+                <p>Are you sure you want to delete this voucher?</p>
+
+                <input type="hidden" id="deleteVoucherId">
+                <input type="hidden" id="deleteVoucherUserId">
+
+                <div style="margin-top: 15px;">
+                    <button class="btn secondary-btn" id="cancelDeleteVoucher">Cancel</button>
+                    <button class="btn danger-btn" id="confirmDeleteVoucher">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        
     <script type="module" src="admin-script.js"></script>
 </body>
 </html>
