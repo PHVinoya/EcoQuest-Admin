@@ -18,7 +18,11 @@ function getAdminByUsername($username) {
     foreach ($data['documents'] as $doc) {
         $fields = $doc['fields'];
         if (isset($fields['username']['stringValue']) && $fields['username']['stringValue'] === $username) {
+            $parts = explode('/', $doc['name']);
+            $docId = end($parts);
+
             return [
+                'id' => $docId, // ✅ ADD THIS
                 'username' => $fields['username']['stringValue'],
                 'password' => $fields['password']['stringValue'] ?? ''
             ];

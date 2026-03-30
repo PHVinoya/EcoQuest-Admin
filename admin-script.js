@@ -2,8 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-// --- YOUR FIREBASE CONFIGURATION ---
-// Replace this with your actual Firebase project config
+//  YOUR FIREBASE CONFIGURATIO 
 const firebaseConfig = {
     apiKey: "AIzaSyAwrqK_cyeGrI1C02bgyv1zJ2AgRwVkd1s",
     authDomain: "ecoquest-ar.firebaseapp.com",
@@ -21,7 +20,7 @@ document.addEventListener('click', (e) => {
 
         document.getElementById('editUserId').value = uid;
 
-        // Optional: prefill values from row
+        
         const row = e.target.closest('tr');
         document.getElementById('editCoins').value = row.children[2].innerText;
         document.getElementById('editPoints').value = row.children[3].innerText;
@@ -79,7 +78,7 @@ async function loadUsers() {
         tbody.innerHTML = '<tr><td colspan="4">Failed to load users</td></tr>';
     }
     
-    let usersData = []; // store users globally
+    let usersData = []; 
 
     function sortUsers(type) {
         usersData.sort((a, b) => b[type] - a[type]);
@@ -107,7 +106,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. Sidebar Navigation ---
+    // Sidebar Navigation 
     const sidebarItems = document.querySelectorAll('.sidebar-nav li[data-page]');
     const pages = document.querySelectorAll('.page');
     const pageTitle = document.getElementById('pageTitle');
@@ -132,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.toggle('active');
     });
 
-    // --- 2. Real-time Data Sync (Firestore) ---
     
     // Sync Stats
     onSnapshot(collection(db, "stats"), (snapshot) => {
@@ -195,29 +193,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 3. Firestore Actions ---
-    window.toggleUserStatus = async (id, currentStatus) => {
-        const newStatus = currentStatus === 'Active' ? 'Suspended' : 'Active';
-        await updateDoc(doc(db, "users", id), { status: newStatus });
-    };
+    // // Firestore Actions
+    // window.toggleUserStatus = async (id, currentStatus) => {
+    //     const newStatus = currentStatus === 'Active' ? 'Suspended' : 'Active';
+    //     await updateDoc(doc(db, "users", id), { status: newStatus });
+    // };
 
-    window.deleteUser = async (id) => {
-        if (confirm('Are you sure you want to delete this user?')) {
-            await deleteDoc(doc(db, "users", id));
-        }
-    };
+    // window.deleteUser = async (id) => {
+    //     if (confirm('Are you sure you want to delete this user?')) {
+    //         await deleteDoc(doc(db, "users", id));
+    //     }
+    // };
 
-    window.markVoucherUsed = async (id) => {
-        await updateDoc(doc(db, "vouchers", id), { status: 'Used' });
-    };
+    // window.markVoucherUsed = async (id) => {
+    //     await updateDoc(doc(db, "vouchers", id), { status: 'Used' });
+    // };
 
-    window.deleteVoucher = async (id) => {
-        if (confirm('Are you sure you want to delete this voucher?')) {
-            await deleteDoc(doc(db, "vouchers", id));
-        }
-    };
+    // window.deleteVoucher = async (id) => {
+    //     if (confirm('Are you sure you want to delete this voucher?')) {
+    //         await deleteDoc(doc(db, "vouchers", id));
+    //     }
+    // };
 
-    // --- 4. Dashboard Charts (Chart.js) ---
+    // Dashboard Charts 
     const initCharts = () => {
         const userCtx = document.getElementById('userGrowthChart').getContext('2d');
         new Chart(userCtx, {
@@ -267,22 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     initCharts();
 
-    // // --- 5. Voucher Validation Modal ---
-    // const voucherModal = document.getElementById('voucherModal');
-    // const validateBtn = document.getElementById('validateVoucherBtn');
-    // const voucherCloseBtn = document.querySelector('#voucherModal .close-btn');
-    // const checkBtn = document.getElementById('checkVoucherBtn');
-    // const voucherInput = document.getElementById('voucherCodeInput');
-    // const voucherResult = document.getElementById('voucherResult');
+    
 
-    // validateBtn.onclick = () => voucherModal.classList.add('show');
-    // voucherCloseBtn.onclick = () => {
-    //     voucherModal.classList.remove('show');
-    //     voucherResult.style.display = 'none';
-    //     voucherInput.value = '';
-    // };
-
-    // --- 6. App Update Form ---
+    // App Update Form 
     const appForm = document.getElementById('appUpdateForm');
     const apkInput = document.getElementById('apkInput');
     const uploadStatus = document.getElementById('uploadStatus');
@@ -302,20 +287,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
     };
 
-    // --- 7. Profile Settings Form ---
-    const settingsForm = document.getElementById('settingsForm');
-    const settingsStatus = document.getElementById('settingsStatus');
+   // SAVE ADMIN SETTINGS
+const settingsForm = document.getElementById('settingsForm');
+const settingsStatus = document.getElementById('settingsStatus');
 
-    settingsForm.onsubmit = (e) => {
-        e.preventDefault();
-        settingsStatus.textContent = 'Saving profile changes...';
-        settingsStatus.className = 'status-message status-success';
+settingsForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const adminName = document.getElementById('adminName').value;
+    const email = document.getElementById('adminEmail').value;
+    const password = document.getElementById('adminPassword').value;
+
+    settingsStatus.textContent = 'Saving...';
+    settingsStatus.className = 'status-message';
+
+    try {
+        const res = await fetch('api/update_admin.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, adminName, email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            settingsStatus.textContent = '✅ Profile updated successfully!';
+            settingsStatus.classList.add('status-success');
+
+            // Clear input fields
+            document.getElementById('username').value = 'admin';
+            document.getElementById('adminName').value = '';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+
+            // Hide message after 2 seconds
+            setTimeout(() => {
+                settingsStatus.textContent = '';
+            }, 2000);
+        } else {
+            settingsStatus.textContent = '❌ ' + (data.error || 'Update failed');
+            settingsStatus.classList.add('status-error');
+            setTimeout(() => {
+                settingsStatus.textContent = '';
+            }, 2000);
+        }
+
+    } catch (err) {
+        console.error(err);
+        settingsStatus.textContent = '❌ Request failed';
+        settingsStatus.classList.add('status-error');
         setTimeout(() => {
-            settingsStatus.textContent = 'Profile updated successfully!';
-        }, 1500);
-    };
+            settingsStatus.textContent = '';
+        }, 2000);
+    }
+});
 
-    // --- 8. Refresh Buttons ---
+    //  Refresh Buttons
     const refreshUsersBtn = document.getElementById('refreshUsersBtn');
     const refreshVouchersBtn = document.getElementById('refreshVouchersBtn');
 
@@ -422,7 +450,7 @@ document.getElementById('cancelDelete').addEventListener('click', () => {
     document.getElementById('deleteModal').style.display = 'none';
 });
 
-// OPTIONAL: click outside modal content
+// click outside modal content
 window.addEventListener('click', (e) => {
     const deleteModal = document.getElementById('deleteModal');
     if (e.target === deleteModal) {
@@ -467,7 +495,7 @@ function getStatus(voucher) {
 }
 
 // Load vouchers for Manage Vouchers page
-let currentVouchers = []; // store all vouchers globally
+let currentVouchers = []; 
 
 function renderVouchers(vouchers) {
     const tbody = document.querySelector("#vouchersTable tbody");
@@ -511,7 +539,7 @@ async function loadVouchers() {
             return;
         }
 
-        currentVouchers = data.vouchers; // store globally
+        currentVouchers = data.vouchers; 
         renderVouchers(currentVouchers);
 
     } catch (err) {
@@ -541,7 +569,7 @@ async function loadVouchers() {
 
             if (data.success) {
                 alert('✅ Voucher marked as used');
-                loadVouchers(); // refresh
+                loadVouchers();
             } else {
                 alert('❌ Failed to update');
             }
@@ -552,8 +580,8 @@ async function loadVouchers() {
         }
     }
 });
+
 //delete voucher
-// DELETE VOUCHER (with confirmation)
 document.addEventListener('click', async (e) => {
     if (e.target.classList.contains('delete-voucher-btn')) {
 
@@ -596,8 +624,9 @@ const voucherSearchInput = document.getElementById('voucherSearch');
 voucherSearchInput.addEventListener('input', () => {
     const query = voucherSearchInput.value.toLowerCase();
 
-    // Filter vouchers based on email or code
     const filtered = currentVouchers.filter(v => v.email.toLowerCase().includes(query) || v.code.toLowerCase().includes(query));
     
     renderVouchers(filtered);
 });
+
+//

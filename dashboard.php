@@ -96,7 +96,7 @@
                     </div>
                 </div>
             </div>
-
+                    
             <!-- Manage Users Page -->
             <div id="usersPage" class="page">
                 <div class="table-controls glass-morphism">
@@ -195,12 +195,17 @@
                     <h3>Profile Settings</h3>
                     <form id="settingsForm">
                         <div class="input-group">
-                            <label>Full Name</label>
-                            <input type="text" id="adminName" value="Admin" required>
+                            <label>Admin Username</label>
+                            <input type="text" id="username" value="admin" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Admin Name</label>
+                            <input type="text" id="adminName" placeholder="Enter admin name" required>
                         </div>
                         <div class="input-group">
                             <label>Email Address</label>
-                            <input type="email" id="adminEmail" value="admin@ecoquest.com" required>
+                            <input type="email" id="adminEmail" placeholder="Enter your email" required>
                         </div>
                         <div class="input-group">
                             <label>New Password</label>

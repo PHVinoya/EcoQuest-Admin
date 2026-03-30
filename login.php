@@ -22,9 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Check password
-    // If your Firestore stores hashed passwords
+   
     if (password_verify($password, $user['password'])) {
         $_SESSION['username'] = $username;
+        $_SESSION['adminId'] = $user['id'];
         echo json_encode(['success' => true, 'redirect' => 'dashboard.php']);
     } 
     // If your Firestore stores plain text passwords (temporary)
