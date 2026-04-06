@@ -34,9 +34,6 @@
                 <li data-page="vouchers">
                     <a href="#"><i class="fas fa-ticket-alt"></i> <span>Manage Vouchers</span></a>
                 </li>
-                <li data-page="app-page">
-                    <a href="#"><i class="fas fa-mobile-alt"></i> <span>App Page</span></a>
-                </li>
                 <li data-page="settings">
                     <a href="#"><i class="fas fa-cog"></i> <span>Profile Settings</span></a>
                 </li>
@@ -70,13 +67,7 @@
                             <p class="stat-value" id="totalUsers">Loading...</p>
                         </div>
                     </div>
-                    <div class="stat-card glass-morphism">
-                        <div class="stat-icon"><i class="fas fa-download"></i></div>
-                        <div class="stat-info">
-                            <h3>App Downloads</h3>
-                            <p class="stat-value" id="totalDownloads">Loading...</p>
-                        </div>
-                    </div>
+            
                     <div class="stat-card glass-morphism">
                         <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
                         <div class="stat-info">
@@ -85,16 +76,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="charts-grid">
-                    <div class="chart-container glass-morphism">
-                        <h3>User Growth</h3>
-                        <canvas id="userGrowthChart"></canvas>
-                    </div>
-                    <div class="chart-container glass-morphism">
-                        <h3>Voucher Usage</h3>
-                        <canvas id="voucherUsageChart"></canvas>
-                    </div>
-                </div>
+                
             </div>
                     
             <!-- Manage Users Page -->
@@ -156,36 +138,11 @@
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
-                            </thead>
+                        </thead>
                         <tbody>
                             <!-- Populated by Firebase -->
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            <!-- App Page -->
-            <div id="appPage" class="page">
-                <div class="app-update-container glass-morphism">
-                    <h3>Update App Version</h3>
-                    <div class="current-version">
-                        <span>Current Version:</span>
-                        <strong id="currentVersion">Loading...</strong>
-                    </div>
-                    <form id="appUpdateForm">
-                        <div class="input-group">
-                            <label>Upload APK File</label>
-                            <div class="file-upload-wrapper">
-                                <input type="file" id="apkInput" accept=".apk">
-                                <div class="file-upload-info">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <p>Click or drag APK file here</p>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn primary-btn">Update Landing Page</button>
-                    </form>
-                    <div id="uploadStatus" class="status-message"></div>
                 </div>
             </div>
 
@@ -276,7 +233,9 @@
             </div>
         </div>
     </div>
-        
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="admin-script.js"></script>
+    <script type="module" src="assets/stats.js"></script>
 </body>
 </html>

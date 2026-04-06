@@ -50,7 +50,7 @@
                 <h1>EcoQuest</h1>
                 <p>Join a global community dedicated to environmental awareness. Track your impact, discover sustainable habits, and protect our planet through interactive eco-challenges.</p>
                 <div class="hero-btns">
-                    <button class="btn primary-btn"><i class="fas fa-download pink-icon"></i> Get App</button>
+                    <button class="btn primary-btn" onclick="downloadAPK()"><i class="fas fa-download pink-icon"></i> Get App</button>
                 </div>
             </div>
             <div class="hero-visual slide-up">
@@ -101,5 +101,10 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        function downloadAPK() {
+            window.location.href = "download_apk.php";
+        }
+    </script>
 </body>
 </html>

@@ -124,4 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             primaryBtn.style.boxShadow = '0 10px 20px rgba(46, 204, 113, 0.4)';
         });
     }
+
+    
 });
+

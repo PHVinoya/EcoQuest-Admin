@@ -113,6 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.querySelector('.menu-toggle');
     const sidebar = document.querySelector('.sidebar');
 
+    
+
     sidebarItems.forEach(item => {
         item.addEventListener('click', () => {
             const targetPage = item.getAttribute('data-page');
@@ -131,16 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.toggle('active');
     });
 
-    
-    // Sync Stats
-    onSnapshot(collection(db, "stats"), (snapshot) => {
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            if (document.getElementById('totalUsers')) document.getElementById('totalUsers').textContent = data.totalUsers.toLocaleString();
-            if (document.getElementById('totalDownloads')) document.getElementById('totalDownloads').textContent = data.totalDownloads.toLocaleString();
-            if (document.getElementById('totalVouchers')) document.getElementById('totalVouchers').textContent = data.totalVouchers.toLocaleString();
-        });
-    });
+
 
     // Sync Users Table
     const usersTbody = document.querySelector('#usersTable tbody');
@@ -193,77 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // // Firestore Actions
-    // window.toggleUserStatus = async (id, currentStatus) => {
-    //     const newStatus = currentStatus === 'Active' ? 'Suspended' : 'Active';
-    //     await updateDoc(doc(db, "users", id), { status: newStatus });
-    // };
-
-    // window.deleteUser = async (id) => {
-    //     if (confirm('Are you sure you want to delete this user?')) {
-    //         await deleteDoc(doc(db, "users", id));
-    //     }
-    // };
-
-    // window.markVoucherUsed = async (id) => {
-    //     await updateDoc(doc(db, "vouchers", id), { status: 'Used' });
-    // };
-
-    // window.deleteVoucher = async (id) => {
-    //     if (confirm('Are you sure you want to delete this voucher?')) {
-    //         await deleteDoc(doc(db, "vouchers", id));
-    //     }
-    // };
-
-    // Dashboard Charts 
-    const initCharts = () => {
-        const userCtx = document.getElementById('userGrowthChart').getContext('2d');
-        new Chart(userCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'New Users',
-                    data: [1200, 1900, 3000, 5000, 8000, 12450],
-                    borderColor: '#2ecc71',
-                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#b3b3b3' } },
-                    x: { grid: { display: false }, ticks: { color: '#b3b3b3' } }
-                }
-            }
-        });
-
-        const voucherCtx = document.getElementById('voucherUsageChart').getContext('2d');
-        new Chart(voucherCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Valid', 'Used', 'Expired'],
-                datasets: [{
-                    label: 'Vouchers',
-                    data: [2500, 1500, 560],
-                    backgroundColor: ['#2ecc71', '#b3b3b3', '#FF0B55'],
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#b3b3b3' } },
-                    x: { grid: { display: false }, ticks: { color: '#b3b3b3' } }
-                }
-            }
-        });
-    };
-    initCharts();
 
     
 
@@ -627,6 +549,5 @@ voucherSearchInput.addEventListener('input', () => {
     const filtered = currentVouchers.filter(v => v.email.toLowerCase().includes(query) || v.code.toLowerCase().includes(query));
     
     renderVouchers(filtered);
-});
+}); 
 
-//
